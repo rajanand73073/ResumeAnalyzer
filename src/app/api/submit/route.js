@@ -8,6 +8,7 @@ import { rejects } from "assert";
 import { error } from "console";
 import { Candidate } from "@/model/Candidate.model";
 import dbConnect from "@/lib/dbConnect";
+import axios from "axios";
 
 
 // Configuration
@@ -80,6 +81,7 @@ export async function POST(req) {
     console.log("uploaded file", result);
     // Delete local file after upload
     await fs.unlink(filePath);
+    console.log("Pdf Text: ",resumeText);
 
     const resumePath = result.url;
 
@@ -96,7 +98,18 @@ export async function POST(req) {
 
     await newCandidate.save()
     console.log("candidate", newCandidate);
-    return NextResponse.json(200, { newCandidate }, "Successfully Candidate Saved")
+
+   
+  await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/extract-keywords`, { resumeText })
+  .then((response) => {
+  console.log("🔍 Keyword extraction started:", response.data);
+})
+.catch((error) => {
+  console.error("❌ Keyword extraction failed:", error.response?.data || error.message);
+});
+
+
+ return NextResponse.json(200, { newCandidate }, "Successfully Candidate Saved")
   } catch (error) {
     console.error("Error processing resume:", error);
     return NextResponse.json(

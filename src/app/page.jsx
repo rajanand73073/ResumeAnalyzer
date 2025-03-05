@@ -71,8 +71,4 @@ export default function Home() {
       </motion.div>
     </main>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7ec03b3 (Initial commit or updated changes)
